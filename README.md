@@ -16,3 +16,5 @@ example
 ```
 .pyenv/bin/python ./file_visualized.py auo_mission_sample.txt out.txt 1
 ```
+
+![plot](./fig.png)
