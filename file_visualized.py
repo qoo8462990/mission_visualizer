@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 import numpy as np
+import json
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.widgets import Slider, Button
@@ -15,7 +16,35 @@ def format_csv_lines(input_file_path, output_file_path):
     with open(output_file_path, 'w') as output_file:
         output_file.write(output_text)
 
-    print("Output has been written to", output_file_path)
+    print("Mission Arragement to", output_file_path)
+
+
+def convert_to_mission(mission_name, output_file_path):
+    # Read the CSV file
+    csv_filename = output_file_path  # Replace with your CSV filename
+    with open(csv_filename, 'r') as csv_file:
+        csv_data = csv_file.read()
+
+    # Define the JSON structure
+    json_data = {
+        "pkg_type": "0",
+        "pkg_id": "vioUploadMission",
+        "timestamp": 0,
+        "file_name": mission_name,
+        "csv": csv_data,
+        "ack": 0
+    }
+
+    # Convert the JSON data to a JSON string
+    json_string = json.dumps(json_data)
+
+    # Print or save the JSON string as needed
+    print('-------------------------------------------------------------------------------------')
+    print('Your mission upload command with filename: ', mission_name)
+    print('-------------------------------------------------------------------------------------')
+    print(json_string)
+    print('-------------------------------------------------------------------------------------')
+
 
 def plot_xyz_coordinates(csv_file_path, num_points):
     df = pd.read_csv(csv_file_path, header=None)
@@ -30,7 +59,16 @@ def plot_xyz_coordinates(csv_file_path, num_points):
     # Create slider axes
     slider_ax = plt.axes([0.25, 0.02, 0.65, 0.03])
     slider = Slider(slider_ax, 'Num Points', 1, len(x_values), valinit=num_points)
+    def on_mousewheel(event):
+        if event.inaxes is None:
+            return
+        if event.key == 'up':
+            slider.set_val(slider.val + 1)
+        elif event.key == 'down':
+            slider.set_val(slider.val - 1)
 
+    # Connect mousewheel event to the figure
+    fig.canvas.mpl_connect('scroll_event', on_mousewheel)
     def update(val):
         num_points = int(slider.val)
         ax.clear()
@@ -82,13 +120,17 @@ def plot_xyz_coordinates(csv_file_path, num_points):
     plt.show()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         print("Usage: python script.py input_file output_file num_points")
     else:
         input_file_path = sys.argv[1]
         output_file_path = sys.argv[2]
+        mission_name = sys.argv[3]
         format_csv_lines(input_file_path, output_file_path)
+        convert_to_mission(mission_name, output_file_path)
 
         csv_file_path = sys.argv[2]
-        num_points = int(sys.argv[3])
+        num_points = int(sys.argv[4])
         plot_xyz_coordinates(csv_file_path, num_points)
+
+
