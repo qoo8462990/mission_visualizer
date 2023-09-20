@@ -10,13 +10,19 @@ def format_csv_lines(input_file_path, output_file_path):
     with open(input_file_path, 'r') as input_file:
         lines = input_file.readlines()
 
-    formatted_lines = [','.join(line.replace(' ', '').split(',')) for line in lines if ',' in line]
+    formatted_lines = []
+    for line in lines:
+        # Check if the line is empty or contains only commas and starts with '#'
+        if line.strip() == "" or all(char == ',' for char in line.strip()) or line.strip().startswith('#'):
+            continue  # Skip this line
+        formatted_lines.append(','.join(line.replace(' ', '').split(',')))
+
     output_text = ''.join(formatted_lines)
 
     with open(output_file_path, 'w') as output_file:
         output_file.write(output_text)
 
-    print("Mission Arragement to", output_file_path)
+    print("Mission Arrangement to", output_file_path)
 
 
 def convert_to_mission(mission_name, output_file_path):
