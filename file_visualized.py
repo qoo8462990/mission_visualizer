@@ -7,6 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.widgets import Slider, Button
 
 def format_csv_lines(input_file_path, output_file_path):
+    path = output_file_path+".csv"
     with open(input_file_path, 'r') as input_file:
         lines = input_file.readlines()
 
@@ -19,16 +20,16 @@ def format_csv_lines(input_file_path, output_file_path):
 
     output_text = ''.join(formatted_lines)
 
-    with open(output_file_path, 'w') as output_file:
+    with open(path, 'w') as output_file:
         output_file.write(output_text)
 
-    print("Mission Arrangement to", output_file_path)
+    print("Mission Arrangement to", path)
 
 
-def convert_to_mission(mission_name, output_file_path):
+def convert_to_mission(mission_name):
+    path = mission_name+".csv"
     # Read the CSV file
-    csv_filename = output_file_path  # Replace with your CSV filename
-    with open(csv_filename, 'r') as csv_file:
+    with open(path, 'r') as csv_file:
         csv_data = csv_file.read()
 
     # Define the JSON structure
@@ -43,6 +44,9 @@ def convert_to_mission(mission_name, output_file_path):
 
     # Convert the JSON data to a JSON string
     json_string = json.dumps(json_data)
+    path = mission_name+".json"
+    with open(path, 'w') as output_file:
+        output_file.write(json_string)
 
     # Print or save the JSON string as needed
     print('-------------------------------------------------------------------------------------')
@@ -126,17 +130,16 @@ def plot_xyz_coordinates(csv_file_path, num_points):
     plt.show()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 4:
         print("Usage: python script.py input_file output_file num_points")
     else:
         input_file_path = sys.argv[1]
         output_file_path = sys.argv[2]
-        mission_name = sys.argv[3]
         format_csv_lines(input_file_path, output_file_path)
-        convert_to_mission(mission_name, output_file_path)
+        convert_to_mission(output_file_path)
 
-        csv_file_path = sys.argv[2]
-        num_points = int(sys.argv[4])
+        csv_file_path = sys.argv[2]+".csv"
+        num_points = int(sys.argv[3])
         plot_xyz_coordinates(csv_file_path, num_points)
 
 
